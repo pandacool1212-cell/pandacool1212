@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy 18th Birthday! ✨</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Dancing+Script:wght@700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <audio id="myAudio" src="audio.mp3"></audio>
+<audio id="bg-music" loop autoplay>
+    <source src="audio.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+
+<script>
+    document.addEventListener('click', function() {
+        var audio = document.getElementById('bg-music');
+        audio.play();
+    }, { once: true }); // This ensures the listener runs only once
+</script>
+
+    
+</script>
+    <style>
+        body { font-family: 'Quicksand', sans-serif; margin: 0; overflow: hidden; background-color: #fff5f5; }
+        
+        .bg-layer {
+            position: fixed; inset: 0; transition: background-image 0.8s ease-in-out; z-index: -1;
+            background-size: cover; background-position: center; filter: brightness(0.9);
+        }
+
+        .font-script { font-family: 'Dancing Script', cursive; }
+        .font-cute { font-family: 'Fredoka', sans-serif; }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .step-screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; position: absolute; inset: 0; padding: 2rem; }
+        .active-screen { display: flex; }
+
+        .cake-layer { background: #ffb7c5; border-radius: 10px 10px 0 0; position: relative; }
+        .frosting { background: #fff; height: 12px; width: 100%; position: absolute; top: 0; border-radius: 10px 10px 50% 50%; }
+
+        /* Hanging Polaroids */
+        .hanging-string { height: 3px; width: 120%; background: #71717a; position: absolute; top: 18%; left: -10%; transform: rotate(-1deg); box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 5; }
+        .polaroid { 
+            background: white; padding: 6px 6px 18px 6px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); 
+            transform-origin: top center; border: 1px solid #fff; z-index: 10;
+        }
+        .polaroid img { width: 80px; height: 80px; object-fit: cover; }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen w-screen">
+
+    <div id="dynamic-bg" class="bg-layer"></div>
+
+    <div id="app-frame" class="w-full max-w-md h-[85vh] glass-container rounded-[2.5rem] overflow-hidden relative mx-4">
+        
+        <div id="progress-bar" class="absolute top-0 left-0 h-1.5 bg-rose-400 transition-all duration-500 z-50" style="width: 0%"></div>
+
+        <div id="screen-0" class="step-screen active-screen">
+            <h2 class="text-rose-500 font-cute uppercase tracking-widest mb-8 bg-white/50 px-4 py-1 rounded-full">Get Ready...</h2>
+            <div id="cd-text" class="text-8xl font-bold text-rose-600 font-cute drop-shadow-lg">5</div>
+        </div>
+
+        <div id="screen-1" class="step-screen">
+            <div class="w-48 h-48 rounded-full border-4 border-white shadow-2xl overflow-hidden mb-6">
+                <img src="image 1.jpeg" class="w-full h-full object-cover">
+            </div>
+            <h1 class="text-4xl font-bold text-center text-gray-800 font-cute">Happy <span class="text-rose-600">18th</span>!</h1>
+            <p class="text-gray-700 mt-2 font-bold bg-white/40 px-3 py-1 rounded-lg">As you enter adulthood, I could tell you to be more serious—but I won't, because your sweet nature is what makes you truly special ✨</p>
+            <button onclick="nextStep()" class="mt-8 px-10 py-3 bg-rose-500 text-white rounded-full font-bold shadow-lg hover:scale-105 transition-transform">Start the Day</button>
+        </div>
+
+        <div id="screen-2" class="step-screen">
+            <h2 id="cake-title" class="text-3xl font-script text-rose-600 mb-12 drop-shadow-sm">Make a Wish! 🎂</h2>
+            <div class="flex flex-col items-center mb-10">
+                <div id="c3" class="w-20 h-8 cake-layer bg-rose-200 z-30 opacity-0"><div class="frosting"></div>
+                    <div id="candle" class="absolute -top-8 left-1/2 -translate-x-1/2 w-2 h-8 bg-rose-400">
+                        <div id="flame" class="hidden absolute -top-4 left-1/2 -translate-x-1/2 w-4 h-6 bg-orange-400 rounded-full animate-pulse shadow-[0_0_10px_orange]"></div>
+                    </div>
+                </div>
+                <div id="c2" class="w-32 h-10 cake-layer bg-rose-300 z-20 -mt-1 opacity-0"><div class="frosting"></div></div>
+                <div id="c1" class="w-44 h-12 cake-layer bg-rose-400 z-10 -mt-1 opacity-0"><div class="frosting"></div></div>
+            </div>
+            <button id="cake-action" onclick="buildCakeFast()" class="px-8 py-3 bg-rose-600 text-white rounded-full font-bold shadow-xl">Bake Cake</button>
+        </div>
+
+        <div id="screen-3" class="step-screen">
+            <h2 class="text-2xl font-script text-rose-600 mb-6 font-bold">A Trip Down Memory Lane...</h2>
+            <div id="memory-display" class="w-64 h-80 bg-white p-3 shadow-2xl rounded-sm transform transition-all duration-500">
+                <img id="current-mem-img" src="" class="w-full h-3/4 object-cover mb-4">
+                <p id="current-mem-caption" class="font-script text-center text-xl text-gray-700"></p>
+            </div>
+            <button id="next-mem-btn" onclick="showNextMemory()" class="mt-8 px-8 py-3 bg-rose-500 text-white rounded-full font-bold shadow-lg">Next Memory</button>
+        </div>
+
+        <div id="screen-4" class="step-screen">
+            <div class="hanging-string"></div>
+            <div id="hanging-container" class="flex flex-wrap justify-center gap-3 mt-20 px-4">
+                </div>
+            <div class="mt-auto mb-10 text-center px-6 bg-white/40 p-4 rounded-3xl backdrop-blur-sm">
+                <h1 class="text-4xl font-script text-rose-600 font-bold">Happy Birthday Stuti... </h1>
+                <p class="text-gray-700 italic mt-2">"Your dedication in every field is a rare gift—never let the world dim that spirit. Whatever the conditions,I am standing right here beside you. Once again a very Happy Birthday, Stuti...!"❤️</p>
+                <button onclick="location.reload()" class="mt-4 text-xs font-bold text-rose-500 uppercase tracking-tighter underline">Replay Magic</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Your specific Background URLs
+        const bgUrls = [
+            "url('https://images.pexels.com/photos/2101187/pexels-photo-2101187.jpeg')",
+            "url('https://images.pexels.com/photos/1128797/pexels-photo-1128797.jpeg')",
+            "url('https://images.pexels.com/photos/101472/pexels-photo-101472.jpeg')",
+            "url('https://images.pexels.com/photos/221083/pexels-photo-221083.jpeg')",
+            "url('https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg')"
+        ];
+
+        const memories = [
+            { url: "image2.jpg", cap: "Deep and Sorrowful Eyes" },
+            { url: "image3.jpg", cap: "Elegant" },
+            { url: "image4.jpg", cap: "Your smile is the most genuine thing about you" },
+            { url: "image5.jpg", cap: "Some people wear sarees, but you make the saree look beautiful" },
+            { url: "image6.jpg", cap: "Personality shines through, whether you're in a saree or a modern dress" }
+        ];
+
+        let currentStep = 0;
+        let memIndex = 0;
+
+        // Initialize BG
+        document.getElementById('dynamic-bg').style.backgroundImage = bgUrls[0];
+
+        // Countdown
+        const cd = setInterval(() => {
+            let val = parseInt(document.getElementById('cd-text').innerText);
+            if (val > 1) {
+                document.getElementById('cd-text').innerText = val - 1;
+            } else {
+                clearInterval(cd);
+                nextStep();
+            }
+        }, 1000);
+
+        function nextStep() {
+            document.getElementById(`screen-${currentStep}`).classList.remove('active-screen');
+            currentStep++;
+            const next = document.getElementById(`screen-${currentStep}`);
+            if (next) {
+                next.classList.add('active-screen');
+                // Change Background smoothly
+                document.getElementById('dynamic-bg').style.backgroundImage = bgUrls[currentStep];
+                document.getElementById('progress-bar').style.width = (currentStep / 4 * 100) + "%";
+            }
+            if (currentStep === 3) showNextMemory();
+            if (currentStep === 4) setupHangingPhotos();
+        }
+
+        function buildCakeFast() {
+            const btn = document.getElementById('cake-action');
+            if (btn.innerText === "Bake Cake") {
+                gsap.to("#c1, #c2, #c3", { opacity: 1, y: 0, stagger: 0.1, duration: 0.3, ease: "back.out" });
+                btn.innerText = "Light Candle";
+            } else if (btn.innerText === "Light Candle") {
+                document.getElementById('flame').classList.remove('hidden');
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.7 } });
+                btn.innerText = "See Memories";
+            } else {
+                nextStep();
+            }
+        }
+
+        function launchBalloons() {
+            const colors = ['#ff7eb3', '#ff758c', '#fad0c4', '#ff9a9e', '#fecfef'];
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const balloon = document.createElement('div');
+                    balloon.className = 'balloon';
+                    balloon.style.left = Math.random() * 100 + 'vw';
+                    balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    balloon.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                    document.body.appendChild(balloon);
+                    
+                    // Remove balloon after animation
+                    setTimeout(() => balloon.remove(), 4000);
+                }, i * 200);
+            }
+        }
+
+        function showNextMemory() {
+            const card = document.getElementById('memory-display');
+            if (memIndex < memories.length) {
+                gsap.to(card, { opacity: 0, scale: 0.8, duration: 0.2, onComplete: () => {
+                    document.getElementById('current-mem-img').src = memories[memIndex].url;
+                    document.getElementById('current-mem-caption').innerText = memories[memIndex].cap;
+                    memIndex++;
+                    gsap.to(card, { opacity: 1, scale: 1, rotation: Math.random() * 6 - 3, duration: 0.4 });
+                }});
+            } else {
+                nextStep();
+            }
+        }
+
+        function setupHangingPhotos() {
+            const container = document.getElementById('hanging-container');
+            memories.forEach((mem, i) => {
+                const div = document.createElement('div');
+                div.className = "polaroid";
+                const rot = (i % 2 === 0) ? (6 + i) : (-6 - i);
+                div.style.transform = `rotate(${rot}deg)`;
+                div.innerHTML = `<img src="${mem.url}">`;
+                container.appendChild(div);
+                gsap.from(div, { y: -200, opacity: 0, delay: i * 0.15, duration: 0.8, ease: "bounce.out" });
+            });
+            setTimeout(() => {
+                confetti({ particleCount: 150, spread: 100, origin: { y: 0.8 } });
+            }, 1000);
+        }
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>
